@@ -27,18 +27,42 @@ flowchart LR
 
 ## Executar
 
-Requisitos: Java 17 e Docker com Compose. Na raiz:
+Requisitos: Java 17, Docker com Compose e Node.js 22 ou superior com npm.
+
+Na raiz do projeto, gere os JARs e inicie os quatro projetos Java e o RabbitMQ
+com Docker:
 
 ```sh
 ./gradlew bootJar
-docker compose up -d --build
+docker compose up -d --build rabbitmq eureka-server command-service validator-service mining-service
 ```
 
-O Compose inicia o frontend, os quatro projetos Java e o RabbitMQ. Acesse o
-frontend em **http://localhost:3000**. Aguarde os serviços iniciarem e
-o registro aparecer em http://localhost:8761. A descoberta pode levar cerca de
-um minuto; nesse intervalo, o envio pode retornar 503. O painel do RabbitMQ
-fica em http://localhost:15672 (`guest`/`guest`).
+Em outro terminal, inicie o frontend com npm:
+
+```sh
+cd frontend
+npm install
+npm start
+```
+
+Acesse **http://localhost:3000**. Aguarde os serviços iniciarem e o registro
+aparecer em http://localhost:8761. A descoberta pode levar cerca de um minuto;
+nesse intervalo, o envio pode retornar 503. O painel do RabbitMQ fica em
+http://localhost:15672 (`guest`/`guest`).
+
+Se `npm start` retornar `EADDRINUSE` na porta 3000, já existe um processo usando
+essa porta. Isso ocorre, por exemplo, quando o frontend também foi iniciado pelo
+Compose com `docker compose up -d --build`. Nesse caso, pare apenas o container
+do frontend na raiz do projeto e execute `npm start` novamente:
+
+```sh
+docker compose stop frontend
+cd frontend
+npm start
+```
+
+Como alternativa, mantenha o processo atual e use outra porta para o frontend
+local com `PORT=3001 npm start`; nesse caso, acesse http://localhost:3001.
 
 Para conferir as APIs diretamente:
 
@@ -53,7 +77,8 @@ O POST retorna 202 após enviar ao RabbitMQ; o processamento é assíncrono. A c
 retorna um objeto como `{"BACK":0,"CLOSE":0,"FRONT":0,"LEFT":1,"OPEN":0,"RIGHT":0}`.
 O banco é exclusivo do MiningService, persistido no volume `mining-data`.
 
-Para encerrar sem apagar os dados:
+Para encerrar sem apagar os dados, interrompa `npm start` com `Ctrl+C` e, na
+raiz do projeto, execute:
 
 ```sh
 docker compose down
