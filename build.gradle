@@ -1,0 +1,6 @@
+// Cada aplicação é um build independente; a raiz apenas agrega as tarefas.
+['test', 'build', 'bootJar'].each { taskName ->
+    tasks.register(taskName) {
+        dependsOn gradle.includedBuilds.collect { it.task(":${taskName}") }
+    }
+}

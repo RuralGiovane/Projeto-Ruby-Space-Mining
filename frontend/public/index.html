@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111713">
+  <title>Space Mining — Centro de comando</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23c2ed8b'/%3E%3Cpath d='M16 42 32 14 48 42 32 34Z' fill='%23111713'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="header">
+      <a class="brand" href="/" aria-label="Space Mining, início"><span class="brand-icon" aria-hidden="true">◈</span> SPACE MINING</a>
+      <span class="header-label">CONTROLE DE OPERAÇÕES <span class="header-dot">/</span> 01</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div><p class="eyebrow">EXPLORAÇÃO ESPACIAL · PAINEL DO OPERADOR</p><h1 id="page-title">Cada comando.<br><span>Uma nova direção.</span></h1><p class="intro-description">Controle o robô minerador e acompanhe os comandos processados.</p></div>
+        <div class="orbit" aria-hidden="true"><div class="orbit-ring"></div><div class="asteroid">◈</div><span class="orbit-label">SPACE MINING / MISSION CONTROL</span></div>
+      </section>
+
+      <div class="dashboard">
+        <section class="panel control-panel" aria-labelledby="control-title">
+          <div class="section-heading"><div><p class="eyebrow">01 / OPERAÇÃO</p><h2 id="control-title">Centro de comando</h2></div><span class="small-tag">MANUAL</span></div>
+          <p class="section-description">Escolha uma direção ou uma ação da garra.</p>
+          <div class="command-grid" role="group" aria-label="Selecionar comando">
+            <button class="command front" data-command="FRONT" aria-pressed="false"><span class="command-symbol" aria-hidden="true">↑</span><span>Frente</span><small>FRONT</small></button>
+            <button class="command left" data-command="LEFT" aria-pressed="false"><span class="command-symbol" aria-hidden="true">←</span><span>Esquerda</span><small>LEFT</small></button>
+            <span class="robot-marker" aria-hidden="true">◈<small>ROBÔ</small></span>
+            <button class="command right" data-command="RIGHT" aria-pressed="false"><span class="command-symbol" aria-hidden="true">→</span><span>Direita</span><small>RIGHT</small></button>
+            <button class="command back" data-command="BACK" aria-pressed="false"><span class="command-symbol" aria-hidden="true">↓</span><span>Trás</span><small>BACK</small></button>
+          </div>
+          <div class="claw-controls" role="group" aria-label="Selecionar ação da garra">
+            <button class="command claw" data-command="OPEN" aria-pressed="false"><span class="claw-symbol" aria-hidden="true">↔</span><span>Abrir garra<small>OPEN</small></span></button>
+            <button class="command claw" data-command="CLOSE" aria-pressed="false"><span class="claw-symbol" aria-hidden="true">⇥⇤</span><span>Fechar garra<small>CLOSE</small></span></button>
+          </div>
+          <div class="selection"><span>Comando selecionado</span><code id="selected-command">—</code></div>
+          <button id="send-command" class="send-button" disabled><span id="send-label">Selecione um comando</span><span aria-hidden="true">↗</span></button>
+          <p id="send-feedback" class="feedback" role="status" aria-live="polite">O envio passa por validação antes de entrar na fila.</p>
+        </section>
+
+        <div class="right-column">
+          <section class="panel counts-panel" aria-labelledby="counts-title">
+            <div class="section-heading"><div><p class="eyebrow">02 / TELEMETRIA</p><h2 id="counts-title">Comandos processados</h2></div><button id="refresh-counts" class="icon-button" aria-label="Atualizar contagens" title="Atualizar contagens">↻</button></div>
+            <div class="total-row"><div><span id="total-count" class="total-count">—</span><span class="total-label">NO TOTAL</span></div><span id="counts-status" class="connection-status" role="status">Conectando…</span></div>
+            <div class="count-grid">
+              <div class="count-item"><span>← <span>LEFT</span></span><strong data-count="LEFT">—</strong></div>
+              <div class="count-item"><span>→ <span>RIGHT</span></span><strong data-count="RIGHT">—</strong></div>
+              <div class="count-item"><span>↑ <span>FRONT</span></span><strong data-count="FRONT">—</strong></div>
+              <div class="count-item"><span>↓ <span>BACK</span></span><strong data-count="BACK">—</strong></div>
+              <div class="count-item"><span>↔ <span>OPEN</span></span><strong data-count="OPEN">—</strong></div>
+              <div class="count-item"><span>⇥⇤ <span>CLOSE</span></span><strong data-count="CLOSE">—</strong></div>
+            </div>
+            <div class="counts-footer"><span id="last-updated">Aguardando primeira atualização</span><span>A cada 3 s</span></div>
+            <p id="counts-error" class="counts-error" role="status" hidden></p>
+          </section>
+
+          <section class="panel history-panel" aria-labelledby="history-title">
+            <div class="section-heading"><div><p class="eyebrow">03 / ATIVIDADE</p><h2 id="history-title">Histórico de envios</h2></div><span class="small-tag">NESTA SESSÃO</span></div>
+            <div id="history-empty" class="empty-state"><span aria-hidden="true">⌁</span><p>Pronto para a primeira missão.</p><small>Seus envios aparecerão aqui.</small></div>
+            <ol id="history-list" class="history-list" aria-label="Últimos envios"></ol>
+            <p class="history-note">“Na fila” confirma o envio. As contagens acima mostram o processamento; não há confirmação individual de execução.</p>
+          </section>
+        </div>
+      </div>
+    </main>
+    <footer class="footer"><span><span class="footer-mark">◈</span> SPACE MINING</span><span>Uma ordem por vez. Explore com precisão.</span></footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      COMMAND_SERVICE_URL: http://command-service:8080
+      MINING_SERVICE_URL: http://mining-service:8082
+    depends_on:
+      - command-service
+      - mining-service
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  eureka-server:
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+
+  command-service:
+    build: ./command-service
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - validator-service
+
+  validator-service:
+    build: ./validator-service
+    ports:
+      - "8081:8081"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      RABBITMQ_HOST: rabbitmq
+    depends_on:
+      eureka-server:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+  mining-service:
+    build: ./mining-service
+    ports:
+      - "8082:8082"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+    volumes:
+      - mining-data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  rabbitmq-data:
+  mining-data:

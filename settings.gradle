@@ -1,0 +1,5 @@
+rootProject.name = 'space-mining'
+includeBuild('command-service')
+includeBuild('validator-service')
+includeBuild('mining-service')
+includeBuild('eureka-server')
